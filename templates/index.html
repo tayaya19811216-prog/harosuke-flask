@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハロー！プロジェクト スケジュール</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/locales/ja.global.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: #f0f4f8;
+      color: #1a1a2e;
+      min-height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: linear-gradient(135deg, #007DC9 0%, #005fa3 100%);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.04em; }
+    header p { font-size: 0.75rem; opacity: 0.75; margin-top: 2px; }
+
+    #cache-badge {
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 3px 9px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 12px 40px;
+    }
+
+    .filters {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .filters-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #007DC9;
+      margin-bottom: 12px;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .filter-group label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .filter-group select {
+      padding: 7px 10px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      background: #fafafa;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .filter-group select:focus {
+      outline: none;
+      border-color: #007DC9;
+      background: white;
+    }
+
+    .filter-group select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #007DC9; color: white; }
+    .btn-primary:hover { background: #0069b0; }
+    .btn-reset { background: #f0f0f0; color: #555; }
+    .btn-reset:hover { background: #e2e2e2; }
+
+    .error-box {
+      background: #fff0f0;
+      border: 1.5px solid #ffcdd2;
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #c62828;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+    }
+
+    #calendar-wrap {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #calendar {
+      min-width: 320px;
+    }
+
+    /* 週表示は横幅を確保してスクロール */
+    .fc-timeGridWeek-view {
+      min-width: 560px;
+    }
+
+    /* FullCalendar customisation */
+    .fc .fc-toolbar-title { font-size: 1.1rem; font-weight: 700; }
+
+    .fc .fc-button {
+      background: #007DC9 !important;
+      border-color: #007DC9 !important;
+      font-size: 0.82rem !important;
+      padding: 4px 10px !important;
+    }
+
+    .fc .fc-button:hover { background: #0069b0 !important; border-color: #0069b0 !important; }
+    .fc .fc-button-active { background: #005fa3 !important; border-color: #005fa3 !important; }
+
+    .fc-event {
+      border: none !important;
+      border-radius: 4px !important;
+      font-size: 0.75rem !important;
+      padding: 1px 4px !important;
+      cursor: pointer !important;
+    }
+
+    .fc-event-TV, .fc-event-RADIO { background-color: #1565c0 !important; }
+    .fc-event-CONCERT, .fc-event-STAGE { background-color: #880e4f !important; }
+    .fc-event-EVENT { background-color: #6a1b9a !important; }
+    .fc-event-RELEASE { background-color: #2e7d32 !important; }
+    .fc-event-STREAM { background-color: #bf360c !important; }
+    .fc-event-BIRTHDAY, .fc-event-ANNIVERSARY { background-color: #f57f17 !important; }
+    .fc-event-MAGAZINE, .fc-event-WEB, .fc-event-OTHER { background-color: #546e7a !important; }
+
+    /* Event popup */
+    #event-popup {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 18px 20px;
+      max-width: 360px;
+      min-width: 260px;
+      pointer-events: auto;
+    }
+
+    #event-popup.visible { display: block; }
+
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #aaa;
+      line-height: 1;
+    }
+
+    .popup-close:hover { color: #333; }
+
+    .popup-category {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .popup-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .popup-date {
+      font-size: 0.8rem;
+      color: #007DC9;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .popup-time {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .popup-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .popup-tag {
+      padding: 2px 7px;
+      background: #e8f4fb;
+      color: #007DC9;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .popup-note {
+      font-size: 0.78rem;
+      color: #777;
+      margin-top: 6px;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .popup-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 12px;
+      background: #007DC9;
+      color: white;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .popup-link:hover { background: #0069b0; }
+
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      border-radius: 12px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid #e0e0e0;
+      border-top-color: #007DC9;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Category legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: #555;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .export-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #f0f0f0;
+      flex-wrap: wrap;
+    }
+
+    .export-bar-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .btn-export-ical {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      background: white;
+      color: #2e7d32;
+      border: 1.5px solid #2e7d32;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-export-ical:hover { background: #f1f8f2; }
+    .btn-export-ical:active { transform: scale(0.97); }
+
+    .export-count {
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
+    /* Popup export buttons */
+    .popup-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .popup-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+    }
+
+    .popup-btn-official {
+      background: #007DC9;
+      color: white;
+    }
+
+    .popup-btn-official:hover { background: #0069b0; }
+
+    .popup-btn-gcal {
+      background: #fff;
+      color: #1a73e8;
+      border: 1.5px solid #1a73e8;
+    }
+
+    .popup-btn-gcal:hover { background: #e8f0fe; }
+
+    .popup-btn-ical {
+      background: #fff;
+      color: #2e7d32;
+      border: 1.5px solid #2e7d32;
+    }
+
+    .popup-btn-ical:hover { background: #f1f8f2; }
+
+    /* 推しメンバー */
+    .oshi-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #f0f0f0;
+      flex-wrap: wrap;
+    }
+
+    .oshi-bar-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #e91e8c;
+      white-space: nowrap;
+    }
+
+    .oshi-none-text {
+      font-size: 0.82rem;
+      color: #bbb;
+    }
+
+    .oshi-registered {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .oshi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      background: #fce4ec;
+      border: 1.5px solid #f48fb1;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #c2185b;
+    }
+
+    .btn-oshi {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 13px;
+      border-radius: 20px;
+      border: 1.5px solid;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+      background: white;
+    }
+
+    .btn-oshi:active { transform: scale(0.97); }
+
+    .btn-oshi-register {
+      border-color: #e91e8c;
+      color: #e91e8c;
+    }
+    .btn-oshi-register:hover { background: #fce4ec; }
+
+    .btn-oshi-view {
+      border-color: #e91e8c;
+      color: #e91e8c;
+    }
+    .btn-oshi-view:hover { background: #fce4ec; }
+    .btn-oshi-view.active {
+      background: #e91e8c;
+      color: white;
+      border-color: #e91e8c;
+    }
+    .btn-oshi-view.active:hover { background: #c2185b; border-color: #c2185b; }
+
+    .btn-oshi-clear {
+      border-color: #ddd;
+      color: #aaa;
+      font-size: 0.75rem;
+    }
+    .btn-oshi-clear:hover { border-color: #bbb; color: #777; }
+
+    .oshi-mode-active-bar {
+      display: none;
+      width: 100%;
+      padding: 7px 12px;
+      background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #c2185b;
+      font-weight: 600;
+      margin-top: 6px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-row.oshi-locked { opacity: 0.4; pointer-events: none; user-select: none; }
+
+    /* ---- レスポンシブ ---- */
+
+    /* 縦型スマホ */
+    @media (max-width: 480px) {
+      header { padding: 10px 12px; gap: 6px; }
+      header h1 { font-size: 1rem; }
+      header p { display: none; }
+      .main { padding: 10px 8px 32px; }
+      .filters { padding: 12px; }
+      .filter-row { gap: 8px; }
+      .filter-group { min-width: calc(50% - 4px); flex: 1 1 calc(50% - 4px); }
+      .btn { padding: 8px 12px; font-size: 0.82rem; }
+      .oshi-bar { gap: 8px; }
+      .export-bar { gap: 6px; }
+      #calendar-wrap { padding: 10px 6px; }
+      .fc .fc-toolbar { flex-wrap: wrap; gap: 4px; }
+      .fc .fc-toolbar-title { font-size: 0.95rem !important; }
+      .fc .fc-button { font-size: 0.75rem !important; padding: 3px 7px !important; }
+    }
+
+    /* 横型スマホ・小タブレット */
+    @media (max-width: 768px) and (orientation: landscape) {
+      header { padding: 8px 16px; }
+      header p { display: none; }
+      .main { padding: 10px 12px 24px; }
+      .filters { padding: 10px 14px; margin-bottom: 12px; }
+      .filter-row { gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+      .filter-group { min-width: 130px; flex-shrink: 0; }
+      .legend { display: none; }
+    }
+
+    /* 中型タブレット以上 */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .filter-group { min-width: 140px; }
+    }
+
+    /* 全画面共通: ヘッダー折り返し防止 */
+    @media (max-width: 360px) {
+      #cache-badge { display: none; }
+    }
+
+    /* 言語切替ボタン */
+    #btn-lang {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.5);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    #btn-lang:hover { background: rgba(255,255,255,0.28); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 data-i18n="header.title">ハロー！プロジェクト スケジュール</h1>
+    <p data-i18n="header.subtitle">公式サイトのスケジュール情報をリアルタイム取得</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <button id="btn-lang">EN</button>
+    <div id="cache-badge" data-i18n-dynamic="cache-badge">キャッシュ: 読み込み中…</div>
+  </div>
+</header>
+
+<div class="main">
+
+  {% if error %}
+  <div class="error-box">⚠ {{ error }}</div>
+  {% endif %}
+
+  <div class="filters">
+    <div class="filters-title" data-i18n="filters.title">絞り込み</div>
+    <div class="filter-row">
+
+      <div class="filter-group">
+        <label for="sel-year" data-i18n="label.year">年</label>
+        <select id="sel-year">
+          {% for yr in years %}
+          <option value="{{ yr }}" data-label-ja="{{ yr }}年" data-label-en="{{ yr }}" {% if yr == selected_year %}selected{% endif %}>{{ yr }}年</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sel-group" data-i18n="label.group">グループ</label>
+        <select id="sel-group">
+          <option value="" data-i18n="option.all-groups">すべてのグループ</option>
+          {% for gid, ginfo in groups.items() | sort(attribute='1.nameJa') %}
+          <option value="{{ gid }}"
+            data-name-ja="{{ ginfo.nameJa or ginfo.nameEn or gid }}"
+            data-name-en="{{ ginfo.nameEn or ginfo.nameJa or gid }}">{{ ginfo.nameJa or ginfo.nameEn or gid }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sel-member" data-i18n="label.member">メンバー</label>
+        <select id="sel-member" disabled>
+          <option value="" data-i18n="option.all-members">すべてのメンバー</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sel-category" data-i18n="label.category">カテゴリ</label>
+        <select id="sel-category">
+          <option value="" data-i18n="option.all-categories">すべて</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="btn-apply" data-i18n="btn.apply">適用</button>
+      <button class="btn btn-reset" id="btn-reset" data-i18n="btn.reset">リセット</button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>TV / RADIO</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#880e4f"></div>CONCERT / STAGE</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6a1b9a"></div>EVENT</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>RELEASE</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#bf360c"></div>STREAM</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f57f17"></div>BIRTHDAY / ANNIVERSARY</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#546e7a"></div><span data-i18n="legend.other">その他</span></div>
+    </div>
+
+    <!-- 推しメンバー -->
+    <div class="oshi-bar">
+      <span class="oshi-bar-label" data-i18n="oshi.label">⭐ 推しメン</span>
+      <span class="oshi-none-text" id="oshi-none-text" data-i18n="oshi.none">未登録</span>
+      <button class="btn-oshi btn-oshi-register" id="btn-oshi-register" style="display:none;">⭐ 推しメン登録</button>
+      <div class="oshi-registered" id="oshi-registered">
+        <span class="oshi-badge" id="oshi-badge-name"></span>
+        <button class="btn-oshi btn-oshi-view" id="btn-oshi-view">推しメン表示</button>
+        <button class="btn-oshi btn-oshi-clear" id="btn-oshi-clear" data-i18n="oshi.clear">解除</button>
+      </div>
+      <div class="oshi-mode-active-bar" id="oshi-mode-active-bar">
+        ⭐ <span id="oshi-mode-name"></span><span data-i18n="oshi.active-suffix"> のスケジュールのみ表示中</span>
+      </div>
+    </div>
+
+    <div class="export-bar">
+      <span class="export-bar-label" data-i18n="export.label">エクスポート</span>
+      <a id="btn-ical" href="#" class="btn-export-ical" download data-i18n="export.ical">
+        📅 iCal (.ics) ダウンロード
+      </a>
+      <span class="export-count" id="export-count"></span>
+    </div>
+  </div>
+
+  <div id="calendar-wrap" style="position:relative;">
+    <div id="loading-overlay"><div class="spinner"></div></div>
+    <div id="calendar"></div>
+  </div>
+
+</div>
+
+<!-- Event popup -->
+<div id="event-popup">
+  <button class="popup-close" id="popup-close">✕</button>
+  <div id="popup-category" class="popup-category"></div>
+  <div id="popup-date" class="popup-date"></div>
+  <div id="popup-title" class="popup-title"></div>
+  <div id="popup-time" class="popup-time"></div>
+  <div id="popup-tags" class="popup-tags"></div>
+  <div id="popup-note" class="popup-note"></div>
+  <div class="popup-actions" id="popup-actions"></div>
+</div>
+
+<script>
+const CAT_COLORS = {
+  TV: '#1565c0', RADIO: '#1565c0',
+  CONCERT: '#880e4f', STAGE: '#880e4f',
+  EVENT: '#6a1b9a',
+  RELEASE: '#2e7d32',
+  STREAM: '#bf360c',
+  BIRTHDAY: '#f57f17', ANNIVERSARY: '#f57f17',
+};
+
+function catColor(cat) {
+  return CAT_COLORS[cat?.toUpperCase()] || '#546e7a';
+}
+
+let calendar;
+
+// ---- 言語切替 (i18n) ----
+const LANG_KEY = 'hp_lang';
+let currentLang = localStorage.getItem(LANG_KEY) || 'ja';
+
+const I18N = {
+  ja: {
+    'header.title':        'ハロー！プロジェクト スケジュール',
+    'header.subtitle':     '公式サイトのスケジュール情報をリアルタイム取得',
+    'filters.title':       '絞り込み',
+    'label.year':          '年',
+    'label.group':         'グループ',
+    'label.member':        'メンバー',
+    'label.category':      'カテゴリ',
+    'option.all-groups':   'すべてのグループ',
+    'option.all-members':  'すべてのメンバー',
+    'option.all-categories': 'すべて',
+    'btn.apply':           '適用',
+    'btn.reset':           'リセット',
+    'legend.other':        'その他',
+    'oshi.label':          '⭐ 推しメン',
+    'oshi.none':           '未登録',
+    'oshi.view':           '推しメン表示',
+    'oshi.view-active':    '表示中 ✓',
+    'oshi.clear':          '解除',
+    'oshi.register':       '⭐ {name} を推しメン登録',
+    'oshi.change':         '⭐ {name} に変更',
+    'oshi.active-suffix':  ' のスケジュールのみ表示中',
+    'export.label':        'エクスポート',
+    'export.ical':         '📅 iCal (.ics) ダウンロード',
+    'cal.today':           '今月',
+    'cal.month':           '月',
+    'cal.week':            '週',
+    'cal.list':            'リスト',
+    'cache.loading':       'キャッシュ: 読み込み中…',
+    'cache.remain':        'キャッシュ残り {min}分',
+    'cache.none':          'キャッシュ: なし（次回再取得）',
+  },
+  en: {
+    'header.title':        'Hello! Project Schedule',
+    'header.subtitle':     'Real-time schedule from the official site',
+    'filters.title':       'Filters',
+    'label.year':          'Year',
+    'label.group':         'Group',
+    'label.member':        'Member',
+    'label.category':      'Category',
+    'option.all-groups':   'All Groups',
+    'option.all-members':  'All Members',
+    'option.all-categories': 'All',
+    'btn.apply':           'Apply',
+    'btn.reset':           'Reset',
+    'legend.other':        'Other',
+    'oshi.label':          '⭐ Fav',
+    'oshi.none':           'Not registered',
+    'oshi.view':           'Show Fav',
+    'oshi.view-active':    'Showing ✓',
+    'oshi.clear':          'Remove',
+    'oshi.register':       '⭐ Register {name}',
+    'oshi.change':         '⭐ Change to {name}',
+    'oshi.active-suffix':  "'s schedule only",
+    'export.label':        'Export',
+    'export.ical':         '📅 Download iCal (.ics)',
+    'cal.today':           'Today',
+    'cal.month':           'Month',
+    'cal.week':            'Week',
+    'cal.list':            'List',
+    'cache.loading':       'Cache: Loading…',
+    'cache.remain':        'Cache: {min}m left',
+    'cache.none':          'Cache: none (will reload)',
+  },
+};
+
+function t(key, vars) {
+  let s = (I18N[currentLang] || I18N.ja)[key] || key;
+  if (vars) Object.entries(vars).forEach(([k, v]) => { s = s.replace(`{${k}}`, v); });
+  return s;
+}
+
+function applyLang() {
+  // static data-i18n テキスト
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+
+  // 年セレクト: 「2026年」← ja / 「2026」← en
+  document.querySelectorAll('#sel-year option').forEach(opt => {
+    opt.textContent = currentLang === 'en'
+      ? (opt.dataset.labelEn || opt.value)
+      : (opt.dataset.labelJa || opt.value + '年');
+  });
+
+  // グループ名
+  document.querySelectorAll('#sel-group option[data-name-ja]').forEach(opt => {
+    opt.textContent = currentLang === 'en'
+      ? (opt.dataset.nameEn || opt.dataset.nameJa)
+      : opt.dataset.nameJa;
+  });
+
+  // メンバー名（data-name-ja / data-name-en を使用）
+  document.querySelectorAll('#sel-member option[data-name-ja]').forEach(opt => {
+    opt.textContent = currentLang === 'en'
+      ? (opt.dataset.nameEn || opt.dataset.nameJa)
+      : opt.dataset.nameJa;
+  });
+
+  // 言語トグルボタンラベル
+  const btn = document.getElementById('btn-lang');
+  if (btn) btn.textContent = currentLang === 'ja' ? 'EN' : 'JP';
+
+  // カレンダーの表示言語・ボタンテキスト
+  if (calendar) {
+    calendar.setOption('locale', currentLang === 'en' ? 'en' : 'ja');
+    calendar.setOption('buttonText', {
+      today: t('cal.today'),
+      month: t('cal.month'),
+      week:  t('cal.week'),
+      list:  t('cal.list'),
+    });
+  }
+
+  // 推しメンUIも更新（テキストが言語依存）
+  updateOshiUI();
+}
+
+function switchLang() {
+  currentLang = currentLang === 'ja' ? 'en' : 'ja';
+  localStorage.setItem(LANG_KEY, currentLang);
+  applyLang();
+}
+
+// ---- フィルター状態の保存・復元 ----
+const FILTER_KEY = 'hp_filter_state';
+
+function saveFilterState() {
+  const state = {
+    year:     document.getElementById('sel-year').value,
+    group:    document.getElementById('sel-group').value,
+    member:   document.getElementById('sel-member').value,
+    category: document.getElementById('sel-category').value,
+    view:     calendar ? calendar.view.type : 'dayGridMonth',
+    date:     calendar ? calendar.getDate().toISOString() : null,
+  };
+  sessionStorage.setItem(FILTER_KEY, JSON.stringify(state));
+}
+
+// メンバーオプションを1件追加するヘルパー（言語対応）
+function buildMemberOption(m) {
+  const opt = document.createElement('option');
+  opt.value = m.id;
+  opt.dataset.nameJa = m.name;
+  opt.dataset.nameEn = m.nameEn || m.name;
+  opt.textContent = currentLang === 'en' ? (m.nameEn || m.name) : m.name;
+  return opt;
+}
+
+// グループを選択してメンバー一覧を取得し、指定メンバーを選択状態にする
+function restoreGroupAndMember(groupId, memberId, year) {
+  return new Promise(resolve => {
+    if (!groupId) { resolve(); return; }
+    const sel = document.getElementById('sel-group');
+    sel.value = groupId;
+    const memberSel = document.getElementById('sel-member');
+    memberSel.innerHTML = `<option value="" data-i18n="option.all-members">${t('option.all-members')}</option>`;
+    memberSel.disabled = true;
+    fetch(`/api/members?group=${groupId}&year=${year}`)
+      .then(r => r.json())
+      .then(members => {
+        if (Array.isArray(members)) {
+          members.forEach(m => memberSel.appendChild(buildMemberOption(m)));
+          memberSel.disabled = false;
+          if (memberId) memberSel.value = memberId;
+        }
+        resolve();
+      })
+      .catch(() => resolve());
+  });
+}
+
+function restoreFilterState() {
+  try {
+    const raw = sessionStorage.getItem(FILTER_KEY);
+    if (!raw) return Promise.resolve(null);
+    return Promise.resolve(JSON.parse(raw));
+  } catch { return Promise.resolve(null); }
+}
+
+// ---- 推しメン管理 ----
+const OSHI_KEY = 'hp_oshi';
+let oshiModeActive = false;
+
+function getOshi() {
+  try { return JSON.parse(localStorage.getItem(OSHI_KEY)) || null; }
+  catch { return null; }
+}
+
+function saveOshi(id, name) {
+  localStorage.setItem(OSHI_KEY, JSON.stringify({ id, name }));
+}
+
+function removeOshi() {
+  localStorage.removeItem(OSHI_KEY);
+}
+
+function updateOshiUI() {
+  const oshi = getOshi();
+  const memberSel = document.getElementById('sel-member');
+  const memberVal = memberSel.value;
+
+  const regBtn = document.getElementById('btn-oshi-register');
+  const noneText = document.getElementById('oshi-none-text');
+  const registeredEl = document.getElementById('oshi-registered');
+  const badgeEl = document.getElementById('oshi-badge-name');
+  const viewBtn = document.getElementById('btn-oshi-view');
+  const activeModeBar = document.getElementById('oshi-mode-active-bar');
+  const filterRow = document.querySelector('.filter-row');
+
+  if (oshi) {
+    // 推しメン登録済み
+    noneText.style.display = 'none';
+    registeredEl.style.display = 'flex';
+    badgeEl.textContent = `⭐ ${oshi.name}`;
+    // 別のメンバーが選択されている場合のみ「登録する」ボタンを表示
+    if (memberVal && oshi.id !== memberVal) {
+      regBtn.style.display = 'inline-flex';
+      const selOpt = memberSel.options[memberSel.selectedIndex];
+      const name = currentLang === 'en'
+        ? (selOpt?.dataset?.nameEn || selOpt?.text || memberVal)
+        : (selOpt?.dataset?.nameJa || selOpt?.text || memberVal);
+      regBtn.textContent = t('oshi.change', { name });
+    } else {
+      regBtn.style.display = 'none';
+    }
+
+    if (oshiModeActive) {
+      viewBtn.textContent = t('oshi.view-active');
+      viewBtn.classList.add('active');
+      activeModeBar.style.display = 'flex';
+      document.getElementById('oshi-mode-name').textContent = oshi.name;
+      filterRow.classList.add('oshi-locked');
+    } else {
+      viewBtn.textContent = t('oshi.view');
+      viewBtn.classList.remove('active');
+      activeModeBar.style.display = 'none';
+      filterRow.classList.remove('oshi-locked');
+    }
+  } else {
+    // 未登録
+    registeredEl.style.display = 'none';
+    activeModeBar.style.display = 'none';
+    filterRow.classList.remove('oshi-locked');
+    if (oshiModeActive) oshiModeActive = false;
+
+    if (memberVal) {
+      // メンバーが選択されている → 登録ボタンを表示、「未登録」は非表示
+      noneText.style.display = 'none';
+      regBtn.style.display = 'inline-flex';
+      const selOpt = memberSel.options[memberSel.selectedIndex];
+      const name = currentLang === 'en'
+        ? (selOpt?.dataset?.nameEn || selOpt?.text || memberVal)
+        : (selOpt?.dataset?.nameJa || selOpt?.text || memberVal);
+      regBtn.textContent = t('oshi.register', { name });
+    } else {
+      // メンバー未選択 → 「未登録」を表示
+      noneText.style.display = 'inline';
+      regBtn.style.display = 'none';
+    }
+  }
+}
+
+function buildFilterParams() {
+  const year = document.getElementById('sel-year').value;
+  const params = new URLSearchParams({ year });
+
+  if (oshiModeActive) {
+    const oshi = getOshi();
+    if (oshi) {
+      params.set('member', oshi.id);
+      return params;
+    }
+  }
+
+  const group = document.getElementById('sel-group').value;
+  const member = document.getElementById('sel-member').value;
+  const category = document.getElementById('sel-category').value;
+  if (group) params.set('group', group);
+  if (member) params.set('member', member);
+  if (category) params.set('category', category);
+  return params;
+}
+
+function buildEventsUrl() {
+  return `/api/events?${buildFilterParams()}`;
+}
+
+function updateIcalLink(count) {
+  const btn = document.getElementById('btn-ical');
+  const countEl = document.getElementById('export-count');
+  const params = buildFilterParams();
+  btn.href = `/api/export/ical?${params}`;
+  if (count !== undefined) {
+    countEl.textContent = `（${count} 件）`;
+  }
+}
+
+function buildGcalUrl(title, dateStr, description, url) {
+  const d = dateStr.replace(/-/g, '');
+  const nextDay = (() => {
+    const dt = new Date(dateStr + 'T00:00:00');
+    dt.setDate(dt.getDate() + 1);
+    return dt.toISOString().slice(0, 10).replace(/-/g, '');
+  })();
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${d}/${nextDay}`,
+    details: description,
+  });
+  if (url) params.set('location', url);
+  return `https://calendar.google.com/calendar/render?${params}`;
+}
+
+function buildSingleIcalUrl(title, dateStr, description, eventUrl) {
+  const params = new URLSearchParams({
+    year: dateStr.slice(0, 4),
+    title,
+    date: dateStr,
+    desc: description,
+  });
+  if (eventUrl) params.set('url', eventUrl);
+  return `/api/export/ical/single?${params}`;
+}
+
+function showLoading(show) {
+  document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+}
+
+function reloadCalendar() {
+  showLoading(true);
+  updateIcalLink();
+  const url = buildEventsUrl();
+  fetch(url)
+    .then(r => r.json())
+    .then(events => {
+      calendar.removeAllEvents();
+      calendar.addEventSource(events.map(e => ({
+        ...e,
+        color: catColor(e.extendedProps?.category),
+        classNames: [`fc-event-${(e.extendedProps?.category || 'OTHER').toUpperCase()}`],
+      })));
+      updateIcalLink(events.length);
+      showLoading(false);
+    })
+    .catch(() => showLoading(false));
+}
+
+function loadMembers() {
+  const group = document.getElementById('sel-group').value;
+  const year = document.getElementById('sel-year').value;
+  const sel = document.getElementById('sel-member');
+  sel.innerHTML = `<option value="" data-i18n="option.all-members">${t('option.all-members')}</option>`;
+  sel.disabled = true;
+
+  if (!group) return;
+
+  fetch(`/api/members?group=${group}&year=${year}`)
+    .then(r => r.json())
+    .then(members => {
+      if (Array.isArray(members)) {
+        members.forEach(m => sel.appendChild(buildMemberOption(m)));
+        sel.disabled = false;
+      }
+    });
+}
+
+function showPopup(event, jsEvent) {
+  const popup = document.getElementById('event-popup');
+  const ep = event.extendedProps || {};
+
+  const cat = ep.category || '';
+  const catEl = document.getElementById('popup-category');
+  catEl.textContent = cat;
+  catEl.style.background = catColor(cat) + '22';
+  catEl.style.color = catColor(cat);
+
+  document.getElementById('popup-date').textContent = event.startStr;
+  document.getElementById('popup-title').textContent = event.title;
+  document.getElementById('popup-time').textContent = ep.timeLabel || '';
+
+  const tagsEl = document.getElementById('popup-tags');
+  tagsEl.innerHTML = '';
+  (ep.tags || []).forEach(t => {
+    const span = document.createElement('span');
+    span.className = 'popup-tag';
+    span.textContent = t;
+    tagsEl.appendChild(span);
+  });
+
+  document.getElementById('popup-note').textContent = ep.note || '';
+
+  const actionsEl = document.getElementById('popup-actions');
+  actionsEl.innerHTML = '';
+
+  // 公式サイトリンク
+  if (ep.link) {
+    const a = document.createElement('a');
+    a.href = ep.link;
+    a.className = 'popup-btn popup-btn-official';
+    a.textContent = currentLang === 'en' ? 'Official Site →' : '公式サイト →';
+    if (ep.targetBlank) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+    actionsEl.appendChild(a);
+  }
+
+  // Googleカレンダー追加ボタン
+  const descParts = [];
+  if (ep.timeLabel) descParts.push(currentLang === 'en' ? `Time: ${ep.timeLabel}` : `時間: ${ep.timeLabel}`);
+  if (ep.tags?.length) descParts.push(currentLang === 'en' ? `Cast: ${ep.tags.join(', ')}` : `出演: ${ep.tags.join(', ')}`);
+  if (ep.note) descParts.push(ep.note);
+  if (ep.link) descParts.push(ep.link);
+  const desc = descParts.join('\n');
+
+  const gcalUrl = buildGcalUrl(event.title, event.startStr, desc, ep.link || '');
+  const gcalBtn = document.createElement('a');
+  gcalBtn.href = gcalUrl;
+  gcalBtn.target = '_blank';
+  gcalBtn.rel = 'noopener noreferrer';
+  gcalBtn.className = 'popup-btn popup-btn-gcal';
+  gcalBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/></svg> ${currentLang === 'en' ? 'Google Calendar' : 'Googleカレンダー'}`;
+  actionsEl.appendChild(gcalBtn);
+
+  // 単独iCalダウンロードボタン
+  const singleIcalParams = new URLSearchParams({
+    year: event.startStr.slice(0, 4),
+    date: event.startStr,
+    title: event.title,
+    desc,
+    url: ep.link || '',
+    cat,
+  });
+  const icalBtn = document.createElement('a');
+  icalBtn.href = `/api/export/ical/single?${singleIcalParams}`;
+  icalBtn.download = '';
+  icalBtn.className = 'popup-btn popup-btn-ical';
+  icalBtn.innerHTML = '📅 iCal';
+  actionsEl.appendChild(icalBtn);
+
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let x = jsEvent.clientX + 12;
+  let y = jsEvent.clientY + 12;
+  popup.style.display = 'block';
+  const pw = popup.offsetWidth, ph = popup.offsetHeight;
+  if (x + pw > vw - 16) x = jsEvent.clientX - pw - 12;
+  if (y + ph > vh - 16) y = jsEvent.clientY - ph - 12;
+  popup.style.left = Math.max(8, x) + 'px';
+  popup.style.top = Math.max(8, y) + 'px';
+  popup.classList.add('visible');
+}
+
+function hidePopup() {
+  document.getElementById('event-popup').classList.remove('visible');
+  document.getElementById('event-popup').style.display = 'none';
+}
+
+function updateCacheBadge() {
+  fetch('/api/cache-status')
+    .then(r => r.json())
+    .then(data => {
+      const rem = data.page_remaining_seconds;
+      if (rem > 0) {
+        const min = Math.ceil(rem / 60);
+        document.getElementById('cache-badge').textContent = t('cache.remain', { min });
+      } else {
+        document.getElementById('cache-badge').textContent = t('cache.none');
+      }
+    })
+    .catch(() => {});
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+  const calEl = document.getElementById('calendar');
+
+  // 保存済みのフィルター状態を取得
+  const saved = await restoreFilterState();
+
+  // カレンダー初期ビュー・日付を復元
+  const initView = saved?.view || 'dayGridMonth';
+  const initDate = saved?.date ? new Date(saved.date) : new Date();
+
+  calendar = new FullCalendar.Calendar(calEl, {
+    locale: currentLang === 'en' ? 'en' : 'ja',
+    initialView: initView,
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,listMonth',
+    },
+    buttonText: {
+      today: t('cal.today'),
+      month: t('cal.month'),
+      week:  t('cal.week'),
+      list:  t('cal.list'),
+    },
+    initialDate: initDate,
+    eventClick: function(info) {
+      info.jsEvent.preventDefault();
+      showPopup(info.event, info.jsEvent);
+    },
+    eventDidMount: function(info) {
+      info.el.title = info.event.title;
+    },
+    loading: function(isLoading) {
+      showLoading(isLoading);
+    },
+    datesSet: function(dateInfo) {
+      const year = dateInfo.start.getFullYear().toString();
+      const curYear = document.getElementById('sel-year').value;
+      if (year !== curYear) {
+        document.getElementById('sel-year').value = year;
+        reloadCalendar();
+      }
+      saveFilterState();
+    },
+  });
+
+  // 年・カテゴリを先に復元
+  if (saved) {
+    if (saved.year) document.getElementById('sel-year').value = saved.year;
+    if (saved.category) document.getElementById('sel-category').value = saved.category;
+  }
+
+  // グループ・メンバーを復元（メンバー一覧APIを待つ）
+  if (saved?.group) {
+    await restoreGroupAndMember(saved.group, saved.member, saved.year);
+  }
+
+  calendar.render();
+  reloadCalendar();
+  updateCacheBadge();
+  setInterval(updateCacheBadge, 60000);
+
+  // 言語切替ボタン
+  document.getElementById('btn-lang').addEventListener('click', switchLang);
+
+  // 言語を初期適用（初回 & 保存済みlangがあれば英語でUI描画）
+  applyLang();
+
+  // 推しメンUI初期化
+  updateOshiUI();
+
+  // グループ変更 → メンバー一覧再読み込み & 推しメンUI更新 & 保存
+  document.getElementById('sel-group').addEventListener('change', function() {
+    loadMembers();
+    updateOshiUI();
+    saveFilterState();
+  });
+
+  // メンバー変更 → 推しメンUI更新 & 保存
+  document.getElementById('sel-member').addEventListener('change', function() {
+    updateOshiUI();
+    saveFilterState();
+  });
+
+  // 年・カテゴリ変更 → 保存
+  document.getElementById('sel-year').addEventListener('change', saveFilterState);
+  document.getElementById('sel-category').addEventListener('change', saveFilterState);
+
+  // 推しメン登録ボタン（⭐）
+  document.getElementById('btn-oshi-register').addEventListener('click', function() {
+    const sel = document.getElementById('sel-member');
+    const id = sel.value;
+    if (!id) return;
+    const name = sel.options[sel.selectedIndex]?.text || id;
+    saveOshi(id, name);
+    updateOshiUI();
+  });
+
+  // 推しメン表示トグル
+  document.getElementById('btn-oshi-view').addEventListener('click', function() {
+    oshiModeActive = !oshiModeActive;
+    updateOshiUI();
+    reloadCalendar();
+  });
+
+  // 推しメン解除
+  document.getElementById('btn-oshi-clear').addEventListener('click', function() {
+    removeOshi();
+    oshiModeActive = false;
+    updateOshiUI();
+  });
+
+  document.getElementById('btn-apply').addEventListener('click', function() {
+    saveFilterState();
+    reloadCalendar();
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', function () {
+    if (oshiModeActive) return;
+    document.getElementById('sel-group').value = '';
+    document.getElementById('sel-category').value = '';
+    document.getElementById('sel-member').innerHTML = '<option value="">すべてのメンバー</option>';
+    document.getElementById('sel-member').disabled = true;
+    updateOshiUI();
+    saveFilterState();
+    reloadCalendar();
+  });
+
+  document.getElementById('popup-close').addEventListener('click', hidePopup);
+
+  document.addEventListener('click', function(e) {
+    const popup = document.getElementById('event-popup');
+    if (popup.classList.contains('visible') && !popup.contains(e.target) && !e.target.closest('.fc-event')) {
+      hidePopup();
+    }
+  });
+});
+</script>
+</body>
+</html>
