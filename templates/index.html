@@ -224,6 +224,285 @@
 
     .popup-close:hover { color: #333; }
 
+    /* レビューセクション */
+    .popup-review-section {
+      border-top: 1px solid #eee;
+      margin-top: 12px;
+      padding-top: 10px;
+    }
+    .popup-review-label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 5px;
+      letter-spacing: 0.02em;
+    }
+    .popup-review-textarea {
+      width: 100%;
+      min-height: 68px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 0.8rem;
+      resize: vertical;
+      box-sizing: border-box;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+    .popup-review-textarea:focus {
+      outline: none;
+      border-color: #7c4dff;
+    }
+    .popup-review-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+    .btn-review-save {
+      padding: 4px 13px;
+      background: #5e35b1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .btn-review-save:hover { background: #4527a0; }
+    .btn-review-delete {
+      padding: 4px 9px;
+      background: none;
+      color: #e57373;
+      border: 1px solid #e57373;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .btn-review-delete:hover { background: #fce4e4; }
+    .review-status {
+      font-size: 0.72rem;
+      color: #2e7d32;
+      flex: 1;
+    }
+    .review-status.error { color: #c62828; }
+    /* カレンダーイベントのメモ有りドット */
+    .fc-event-has-review .fc-event-title::after {
+      content: ' ✏';
+      font-size: 0.7em;
+      opacity: 0.75;
+    }
+
+    /* ========== カスタム週間ビュー ========== */
+    #custom-week-view {
+      display: none;
+      font-size: 0.82rem;
+    }
+    .cw-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 0 10px;
+      flex-wrap: wrap;
+    }
+    .cw-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cw-nav-btn {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .cw-nav-btn:hover { background: #e0e0e0; }
+    .cw-range {
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-width: 180px;
+      text-align: center;
+    }
+    .cw-view-btns { display: flex; gap: 4px; }
+    .cw-view-btn {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .cw-view-btn:hover { background: #e0e0e0; }
+
+    /* グリッド本体 */
+    .cw-outer {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .cw-header-row {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      background: #f7f7fb;
+    }
+    .cw-time-gutter {
+      width: 52px;
+      flex-shrink: 0;
+      border-right: 1px solid #ddd;
+    }
+    .cw-day-head {
+      flex: 1;
+      text-align: center;
+      padding: 6px 2px;
+      border-right: 1px solid #ddd;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+    .cw-day-head:last-child { border-right: none; }
+    .cw-day-head .cw-day-name { font-size: 0.7rem; color: #777; }
+    .cw-day-head .cw-day-num {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .cw-day-head.cw-today .cw-day-num {
+      background: #5e35b1;
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cw-day-head.cw-sun { color: #c62828; }
+    .cw-day-head.cw-sat { color: #1565c0; }
+
+    /* 終日ゾーン */
+    .cw-allday-row {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      min-height: 28px;
+      background: #fafafa;
+    }
+    .cw-allday-label {
+      width: 52px;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+      color: #aaa;
+      text-align: center;
+      padding: 4px 0;
+      border-right: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .cw-allday-cell {
+      flex: 1;
+      padding: 2px 2px;
+      border-right: 1px solid #eee;
+      min-height: 24px;
+      overflow: hidden;
+      min-width: 0;
+    }
+    .cw-allday-cell:last-child { border-right: none; }
+
+    /* タイムグリッド */
+    .cw-timegrid-scroll {
+      overflow-y: auto;
+      max-height: 500px;
+    }
+    .cw-timegrid-row {
+      display: flex;
+      position: relative;
+    }
+    .cw-time-col {
+      width: 52px;
+      flex-shrink: 0;
+      position: relative;
+      border-right: 1px solid #ddd;
+    }
+    .cw-hour-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: right;
+      padding-right: 4px;
+      font-size: 0.65rem;
+      color: #aaa;
+      transform: translateY(-50%);
+      pointer-events: none;
+      line-height: 1;
+    }
+    .cw-day-col {
+      flex: 1;
+      border-right: 1px solid #eee;
+      position: relative;
+    }
+    .cw-day-col:last-child { border-right: none; }
+    .cw-day-col.cw-sun { background: rgba(198,40,40,0.03); }
+    .cw-day-col.cw-sat { background: rgba(21,101,192,0.03); }
+    .cw-hour-line {
+      position: absolute;
+      left: 0; right: 0;
+      border-top: 1px solid #eee;
+      pointer-events: none;
+    }
+    .cw-hour-line.cw-half {
+      border-top: 1px dashed #f0f0f0;
+    }
+
+    /* イベント共通 */
+    .cw-event {
+      border-radius: 4px;
+      padding: 2px 4px;
+      color: white;
+      font-size: 0.72rem;
+      line-height: 1.3;
+      cursor: pointer;
+      overflow: hidden;
+      word-break: break-all;
+      transition: opacity 0.1s;
+    }
+    .cw-event:hover { opacity: 0.85; filter: brightness(1.1); }
+
+    /* 終日イベント */
+    .cw-event-allday {
+      margin: 1px 1px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 時刻付きイベント */
+    .cw-event-timed {
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      min-height: 20px;
+      z-index: 2;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .cw-event-time {
+      font-size: 0.65rem;
+      opacity: 0.9;
+      display: block;
+      font-weight: 700;
+    }
+    .cw-event-title { display: block; }
+
+    .cw-loading {
+      padding: 20px;
+      text-align: center;
+      color: #aaa;
+    }
+
     .popup-category {
       display: inline-block;
       padding: 2px 8px;
@@ -690,6 +969,24 @@
     <div id="calendar"></div>
   </div>
 
+  <!-- カスタム週間ビュー -->
+  <div id="custom-week-view">
+    <div class="cw-toolbar">
+      <div class="cw-nav">
+        <button class="cw-nav-btn" id="cw-prev">‹ 前の週</button>
+        <span class="cw-range" id="cw-range"></span>
+        <button class="cw-nav-btn" id="cw-next">次の週 ›</button>
+      </div>
+      <div class="cw-view-btns">
+        <button class="cw-view-btn" id="cw-to-month"></button>
+        <button class="cw-view-btn" id="cw-to-list"></button>
+      </div>
+    </div>
+    <div class="cw-outer">
+      <div id="cw-grid-wrap"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Event popup -->
@@ -702,6 +999,15 @@
   <div id="popup-tags" class="popup-tags"></div>
   <div id="popup-note" class="popup-note"></div>
   <div class="popup-actions" id="popup-actions"></div>
+  <div class="popup-review-section">
+    <div class="popup-review-label" data-i18n="review.label">✏ メモ・レビュー</div>
+    <textarea class="popup-review-textarea" id="popup-review-textarea" rows="3"></textarea>
+    <div class="popup-review-footer">
+      <button class="btn-review-save" id="btn-review-save" data-i18n="review.save">保存</button>
+      <button class="btn-review-delete" id="btn-review-delete" style="display:none;" data-i18n="review.delete">削除</button>
+      <span class="review-status" id="review-status"></span>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -756,6 +1062,13 @@ const I18N = {
     'cache.loading':       'キャッシュ: 読み込み中…',
     'cache.remain':        'キャッシュ残り {min}分',
     'cache.none':          'キャッシュ: なし（次回再取得）',
+    'review.label':        '✏ メモ・レビュー',
+    'review.save':         '保存',
+    'review.delete':       '削除',
+    'review.saved':        '✓ 保存しました',
+    'review.deleted':      '削除しました',
+    'review.placeholder':  'このイベントのメモを入力…',
+    'review.error':        '保存に失敗しました',
   },
   en: {
     'header.title':        'Hello! Project Schedule',
@@ -788,6 +1101,13 @@ const I18N = {
     'cache.loading':       'Cache: Loading…',
     'cache.remain':        'Cache: {min}m left',
     'cache.none':          'Cache: none (will reload)',
+    'review.label':        '✏ Notes / Review',
+    'review.save':         'Save',
+    'review.delete':       'Delete',
+    'review.saved':        '✓ Saved',
+    'review.deleted':      'Deleted',
+    'review.placeholder':  'Add a note for this event…',
+    'review.error':        'Failed to save',
   },
 };
 
@@ -824,6 +1144,21 @@ function applyLang() {
       : opt.dataset.nameJa;
   });
 
+  // レビューテキストエリアのplaceholder
+  const reviewTa = document.getElementById('popup-review-textarea');
+  if (reviewTa) reviewTa.placeholder = t('review.placeholder');
+
+  // カスタム週ビューのボタンテキスト
+  const cwToMonth = document.getElementById('cw-to-month');
+  if (cwToMonth) cwToMonth.textContent = t('cal.month');
+  const cwToList = document.getElementById('cw-to-list');
+  if (cwToList) cwToList.textContent = t('cal.list');
+  const cwPrev = document.getElementById('cw-prev');
+  if (cwPrev) cwPrev.textContent = currentLang === 'en' ? '‹ Prev' : '‹ 前の週';
+  const cwNext = document.getElementById('cw-next');
+  if (cwNext) cwNext.textContent = currentLang === 'en' ? 'Next ›' : '次の週 ›';
+  if (isCustomWeekView) renderCustomWeekView();
+
   // 言語トグルボタンラベル
   const btn = document.getElementById('btn-lang');
   if (btn) btn.textContent = currentLang === 'ja' ? 'EN' : 'JP';
@@ -849,6 +1184,293 @@ function switchLang() {
   applyLang();
 }
 
+// ---- レビュー機能 ----
+let reviewsCache = {};     // { eventId: { text, updated_at } }
+let currentReviewKey = null;
+
+function getReviewKey(event) {
+  // FullCalendar event (startStr) にも生APIオブジェクト (start) にも対応
+  const dateStr = event.startStr || (typeof event.start === 'string' ? event.start.slice(0, 10) : '');
+  return `${dateStr}__${event.title}`;
+}
+
+async function loadReviewsCache() {
+  try {
+    const r = await fetch('/api/reviews');
+    reviewsCache = await r.json();
+  } catch { reviewsCache = {}; }
+}
+
+function showReviewStatus(msg, isError) {
+  const el = document.getElementById('review-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'review-status' + (isError ? ' error' : '');
+  clearTimeout(el._timer);
+  if (msg) el._timer = setTimeout(() => { el.textContent = ''; }, 2500);
+}
+
+async function saveReview() {
+  const key = currentReviewKey;
+  if (!key) return;
+  const text = document.getElementById('popup-review-textarea').value.trim();
+  try {
+    const r = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: key, text }),
+    });
+    if (!r.ok) throw new Error();
+    if (text) {
+      reviewsCache[key] = { text };
+    } else {
+      delete reviewsCache[key];
+    }
+    showReviewStatus(t('review.saved'), false);
+    document.getElementById('btn-review-delete').style.display = text ? 'inline-flex' : 'none';
+    calendar.refetchEvents();
+  } catch {
+    showReviewStatus(t('review.error'), true);
+  }
+}
+
+async function deleteReview() {
+  const key = currentReviewKey;
+  if (!key) return;
+  try {
+    await fetch(`/api/reviews/${encodeURIComponent(key)}`, { method: 'DELETE' });
+    delete reviewsCache[key];
+    document.getElementById('popup-review-textarea').value = '';
+    document.getElementById('btn-review-delete').style.display = 'none';
+    showReviewStatus(t('review.deleted'), false);
+    calendar.refetchEvents();
+  } catch {
+    showReviewStatus(t('review.error'), true);
+  }
+}
+
+// ---- カスタム週間ビュー ----
+const HOUR_PX = 50;
+const CW_DAYS_JA = ['日', '月', '火', '水', '木', '金', '土'];
+const CW_DAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+let cwWeekStart = null;     // 表示中の週の月曜日
+let cwEventsMap = {};       // id → raw event object (クリック用)
+let isCustomWeekView = false;
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function cwGetWeekStart(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const dow = d.getDay();          // 0=日
+  const diff = dow === 0 ? -6 : 1 - dow; // 月曜始まり
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function cwDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function cwFormatRange(ws) {
+  const we = new Date(ws);
+  we.setDate(we.getDate() + 6);
+  const fmt = d => currentLang === 'en'
+    ? `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`
+    : `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+  return `${fmt(ws)} – ${fmt(we)}`;
+}
+
+function parseTimeLabel(label) {
+  if (!label) return null;
+  const all = [...label.matchAll(/(\d{1,2}):(\d{2})/g)];
+  if (!all.length) return null;
+  const r = { h: +all[0][1], min: +all[0][2] };
+  if (all.length >= 2) { r.endH = +all[1][1]; r.endMin = +all[1][2]; }
+  return r;
+}
+
+async function cwFetchEvents(year) {
+  const params = buildFilterParams();
+  params.set('year', String(year));
+  const resp = await fetch(`/api/events?${params}`);
+  const data = await resp.json();
+  return Array.isArray(data) ? data : [];
+}
+
+async function renderCustomWeekView() {
+  const wrap = document.getElementById('cw-grid-wrap');
+  wrap.innerHTML = `<div class="cw-loading">${currentLang === 'en' ? 'Loading…' : '読み込み中…'}</div>`;
+
+  const ws = cwWeekStart;
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(ws);
+    d.setDate(d.getDate() + i);
+    days.push(d);
+  }
+
+  document.getElementById('cw-range').textContent = cwFormatRange(ws);
+
+  // 年をまたぐ場合は2回フェッチ
+  const y1 = days[0].getFullYear(), y2 = days[6].getFullYear();
+  let events;
+  if (y1 === y2) {
+    events = await cwFetchEvents(y1);
+  } else {
+    const [e1, e2] = await Promise.all([cwFetchEvents(y1), cwFetchEvents(y2)]);
+    events = [...e1, ...e2];
+  }
+
+  // イベントを日別に振り分け
+  const dateStrs = days.map(cwDateStr);
+  cwEventsMap = {};
+  const timedByDay = days.map(() => []);
+  const allDayByDay = days.map(() => []);
+
+  events.forEach(ev => {
+    const ds = (ev.start || '').slice(0, 10);
+    const idx = dateStrs.indexOf(ds);
+    if (idx < 0) return;
+    cwEventsMap[ev.id] = ev;
+    const timed = parseTimeLabel(ev.extendedProps?.timeLabel);
+    if (timed) {
+      timedByDay[idx].push({ ev, timed });
+    } else {
+      allDayByDay[idx].push(ev);
+    }
+  });
+
+  const todayStr = cwDateStr(new Date());
+  const TOTAL_H = 24 * HOUR_PX;
+
+  // ---- HTML構築 ----
+  let html = '';
+
+  // ヘッダー行
+  html += `<div class="cw-header-row">`;
+  html += `<div class="cw-time-gutter"></div>`;
+  days.forEach(d => {
+    const dow = d.getDay();
+    const dayName = currentLang === 'en' ? CW_DAYS_EN[dow] : CW_DAYS_JA[dow];
+    const isToday = cwDateStr(d) === todayStr;
+    const cls = [
+      'cw-day-head',
+      dow === 0 ? 'cw-sun' : dow === 6 ? 'cw-sat' : '',
+      isToday ? 'cw-today' : '',
+    ].filter(Boolean).join(' ');
+    html += `<div class="${cls}">
+      <div class="cw-day-name">${dayName}</div>
+      <div class="cw-day-num">${d.getDate()}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // 終日ゾーン
+  html += `<div class="cw-allday-row">`;
+  html += `<div class="cw-allday-label">ALL<br>DAY</div>`;
+  days.forEach((d, i) => {
+    const dow = d.getDay();
+    html += `<div class="cw-allday-cell${dow===0?' cw-sun':dow===6?' cw-sat':''}">`;
+    allDayByDay[i].forEach(ev => {
+      const color = catColor(ev.extendedProps?.category);
+      const hasRv = reviewsCache[getReviewKey(ev)] ? ' ✏' : '';
+      html += `<div class="cw-event cw-event-allday" data-evid="${escapeHtml(ev.id)}"
+        style="background:${color};">${escapeHtml(ev.title)}${hasRv}</div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div>`;
+
+  // タイムグリッド（スクロール可能）
+  html += `<div class="cw-timegrid-scroll"><div class="cw-timegrid-row">`;
+  // 左: 時刻ラベル列
+  html += `<div class="cw-time-col" style="height:${TOTAL_H}px;">`;
+  for (let h = 0; h < 24; h++) {
+    html += `<div class="cw-hour-label" style="top:${h * HOUR_PX}px;">${String(h).padStart(2,'0')}:00</div>`;
+  }
+  html += `</div>`;
+
+  // 右: 7日分の列
+  days.forEach((d, i) => {
+    const dow = d.getDay();
+    html += `<div class="cw-day-col${dow===0?' cw-sun':dow===6?' cw-sat':''}" style="height:${TOTAL_H}px;">`;
+    // 水平線（毎時・半時）
+    for (let h = 0; h < 24; h++) {
+      html += `<div class="cw-hour-line" style="top:${h * HOUR_PX}px;"></div>`;
+      html += `<div class="cw-hour-line cw-half" style="top:${h * HOUR_PX + HOUR_PX/2}px;"></div>`;
+    }
+    // 時刻付きイベント
+    timedByDay[i].forEach(({ ev, timed }) => {
+      const topPx = (timed.h * 60 + timed.min) / 60 * HOUR_PX;
+      let heightPx = HOUR_PX;
+      if (timed.endH !== undefined) {
+        const mins = (timed.endH * 60 + timed.endMin) - (timed.h * 60 + timed.min);
+        heightPx = Math.max(22, mins / 60 * HOUR_PX);
+      }
+      const color = catColor(ev.extendedProps?.category);
+      const hasRv = reviewsCache[getReviewKey(ev)] ? ' ✏' : '';
+      const timeStr = `${String(timed.h).padStart(2,'0')}:${String(timed.min).padStart(2,'0')}`;
+      html += `<div class="cw-event cw-event-timed" data-evid="${escapeHtml(ev.id)}"
+        style="top:${topPx}px;height:${heightPx}px;background:${color};">
+        <span class="cw-event-time">${timeStr}</span>
+        <span class="cw-event-title">${escapeHtml(ev.title)}${hasRv}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div></div>`;
+
+  wrap.innerHTML = html;
+
+  // 今日が含まれる場合、その時刻付近にスクロール
+  if (dateStrs.includes(todayStr)) {
+    const h = new Date().getHours();
+    const scrollY = Math.max(0, h * HOUR_PX - 60);
+    wrap.querySelector('.cw-timegrid-scroll').scrollTop = scrollY;
+  }
+}
+
+function showCustomWeekView(date) {
+  isCustomWeekView = true;
+  cwWeekStart = cwGetWeekStart(date || calendar?.getDate() || new Date());
+  document.getElementById('calendar-wrap').style.display = 'none';
+  document.getElementById('custom-week-view').style.display = 'block';
+  document.getElementById('cw-to-month').textContent = t('cal.month');
+  document.getElementById('cw-to-list').textContent = t('cal.list');
+  renderCustomWeekView();
+}
+
+function hideCustomWeekView() {
+  isCustomWeekView = false;
+  document.getElementById('custom-week-view').style.display = 'none';
+  document.getElementById('calendar-wrap').style.display = 'block';
+}
+
+// カスタム週ビュー内イベントクリック（委譲）
+function cwHandleEventClick(clickEvt) {
+  const el = clickEvt.target.closest('[data-evid]');
+  if (!el) return;
+  const ev = cwEventsMap[el.dataset.evid];
+  if (!ev) return;
+  // showPopup に渡せる形に変換
+  const adapted = {
+    startStr: (ev.start || '').slice(0, 10),
+    title: ev.title,
+    extendedProps: ev.extendedProps || {},
+    start: ev.start,
+  };
+  showPopup(adapted, clickEvt);
+}
+
 // ---- フィルター状態の保存・復元 ----
 const FILTER_KEY = 'hp_filter_state';
 
@@ -858,8 +1480,10 @@ function saveFilterState() {
     group:    document.getElementById('sel-group').value,
     member:   document.getElementById('sel-member').value,
     category: document.getElementById('sel-category').value,
-    view:     calendar ? calendar.view.type : 'dayGridMonth',
-    date:     calendar ? calendar.getDate().toISOString() : null,
+    view:     isCustomWeekView ? 'timeGridWeek' : (calendar ? calendar.view.type : 'dayGridMonth'),
+    date:     isCustomWeekView
+      ? (cwWeekStart ? cwWeekStart.toISOString() : null)
+      : (calendar ? calendar.getDate().toISOString() : null),
   };
   sessionStorage.setItem(FILTER_KEY, JSON.stringify(state));
 }
@@ -1056,6 +1680,10 @@ function showLoading(show) {
 }
 
 function reloadCalendar() {
+  if (isCustomWeekView) {
+    renderCustomWeekView();
+    return;
+  }
   showLoading(true);
   updateIcalLink();
   const url = buildEventsUrl();
@@ -1117,6 +1745,15 @@ function showPopup(event, jsEvent) {
   });
 
   document.getElementById('popup-note').textContent = ep.note || '';
+
+  // レビュー欄を設定
+  currentReviewKey = getReviewKey(event);
+  const reviewEntry = reviewsCache[currentReviewKey];
+  const textarea = document.getElementById('popup-review-textarea');
+  textarea.value = reviewEntry ? reviewEntry.text : '';
+  textarea.placeholder = t('review.placeholder');
+  document.getElementById('review-status').textContent = '';
+  document.getElementById('btn-review-delete').style.display = reviewEntry ? 'inline-flex' : 'none';
 
   const actionsEl = document.getElementById('popup-actions');
   actionsEl.innerHTML = '';
@@ -1206,19 +1843,30 @@ document.addEventListener('DOMContentLoaded', async function () {
   const initView = saved?.view || 'dayGridMonth';
   const initDate = saved?.date ? new Date(saved.date) : new Date();
 
+  // 週ビューで保存済みなら、カスタム週ビューを起動するため dayGridMonth にリセット
+  const fcInitView = (initView === 'timeGridWeek') ? 'dayGridMonth' : initView;
+
   calendar = new FullCalendar.Calendar(calEl, {
     locale: currentLang === 'en' ? 'en' : 'ja',
-    initialView: initView,
+    initialView: fcInitView,
     height: 'auto',
+    customButtons: {
+      customWeek: {
+        text: t('cal.week'),
+        click: function() {
+          showCustomWeekView(calendar.getDate());
+          saveFilterState();
+        }
+      }
+    },
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,listMonth',
+      right: 'dayGridMonth,customWeek,listMonth',
     },
     buttonText: {
       today: t('cal.today'),
       month: t('cal.month'),
-      week:  t('cal.week'),
       list:  t('cal.list'),
     },
     initialDate: initDate,
@@ -1228,6 +1876,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     },
     eventDidMount: function(info) {
       info.el.title = info.event.title;
+      const key = getReviewKey(info.event);
+      if (reviewsCache[key]) {
+        info.el.classList.add('fc-event-has-review');
+      }
     },
     loading: function(isLoading) {
       showLoading(isLoading);
@@ -1254,6 +1906,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     await restoreGroupAndMember(saved.group, saved.member, saved.year);
   }
 
+  // レビューキャッシュを先読み（eventDidMount で参照するため calendar.render() より前）
+  await loadReviewsCache();
+
   calendar.render();
   reloadCalendar();
   updateCacheBadge();
@@ -1264,6 +1919,35 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // 言語を初期適用（初回 & 保存済みlangがあれば英語でUI描画）
   applyLang();
+
+  // レビュー保存・削除ボタン
+  document.getElementById('btn-review-save').addEventListener('click', saveReview);
+  document.getElementById('btn-review-delete').addEventListener('click', deleteReview);
+
+  // ---- カスタム週ビュー ナビゲーション ----
+  document.getElementById('cw-prev').addEventListener('click', () => {
+    cwWeekStart.setDate(cwWeekStart.getDate() - 7);
+    renderCustomWeekView();
+  });
+  document.getElementById('cw-next').addEventListener('click', () => {
+    cwWeekStart.setDate(cwWeekStart.getDate() + 7);
+    renderCustomWeekView();
+  });
+  document.getElementById('cw-to-month').addEventListener('click', () => {
+    hideCustomWeekView();
+    calendar.changeView('dayGridMonth');
+  });
+  document.getElementById('cw-to-list').addEventListener('click', () => {
+    hideCustomWeekView();
+    calendar.changeView('listMonth');
+  });
+  // イベントクリック委譲
+  document.getElementById('cw-grid-wrap').addEventListener('click', cwHandleEventClick);
+
+  // 週ビューで保存済みだった場合、カスタム週ビューを起動
+  if (initView === 'timeGridWeek') {
+    showCustomWeekView(initDate);
+  }
 
   // 推しメンUI初期化
   updateOshiUI();
@@ -1329,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   document.addEventListener('click', function(e) {
     const popup = document.getElementById('event-popup');
-    if (popup.classList.contains('visible') && !popup.contains(e.target) && !e.target.closest('.fc-event')) {
+    if (popup.classList.contains('visible') && !popup.contains(e.target) && !e.target.closest('.fc-event') && !e.target.closest('.cw-event')) {
       hidePopup();
     }
   });
