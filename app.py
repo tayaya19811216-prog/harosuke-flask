@@ -481,6 +481,58 @@ def api_cache_status():
     return jsonify(get_cache_status())
 
 
+# ---- レビュー保存 ----
+REVIEWS_FILE = os.path.join(os.path.dirname(__file__), "reviews.json")
+
+
+def load_reviews():
+    if not os.path.exists(REVIEWS_FILE):
+        return {}
+    try:
+        with open(REVIEWS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_reviews_data(data):
+    with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+@app.route("/api/reviews", methods=["GET"])
+def api_reviews_get():
+    return jsonify(load_reviews())
+
+
+@app.route("/api/reviews", methods=["POST"])
+def api_reviews_post():
+    body = request.get_json(silent=True)
+    if not body or "eventId" not in body:
+        return jsonify({"error": "eventId required"}), 400
+    event_id = body["eventId"]
+    text = (body.get("text") or "").strip()
+    reviews = load_reviews()
+    if text:
+        import datetime as _dt
+        reviews[event_id] = {
+            "text": text,
+            "updated_at": _dt.datetime.now().isoformat(timespec="seconds"),
+        }
+    else:
+        reviews.pop(event_id, None)
+    save_reviews_data(reviews)
+    return jsonify({"ok": True, "eventId": event_id})
+
+
+@app.route("/api/reviews/<path:event_id>", methods=["DELETE"])
+def api_reviews_delete(event_id):
+    reviews = load_reviews()
+    reviews.pop(event_id, None)
+    save_reviews_data(reviews)
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
